@@ -1,7 +1,0 @@
-#!/bin/sh
-./src/bhcd/bhcd --lua data/blocks.gml <scripts/test.lua | \
-    grep -v '^time:' | \
-    diff -us - regress/blocks-lua.out && \
-    ./scripts/leak --error-exitcode=1 ./src/bhcd/bhcd --lua data/blocks.gml <scripts/test.lua ||
-    exit 1
-

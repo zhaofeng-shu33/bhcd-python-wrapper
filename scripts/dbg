@@ -1,3 +1,0 @@
-#!/bin/sh
-
-G_DEBUG=gc-friendly G_SLICE=always-malloc ./libtool --mode=execute "$@"

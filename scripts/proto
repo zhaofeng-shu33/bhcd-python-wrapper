@@ -1,3 +1,0 @@
-#!/bin/sh
-
-ctags -x --c-kinds=f "$@" | tr -s ' ' | cut -d' ' -f5- | sed -e 's/ {/;/'

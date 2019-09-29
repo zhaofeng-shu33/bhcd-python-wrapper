@@ -1,3 +1,0 @@
-#!/bin/bash
-
-diff -u <(grep -v '^[[:space:]]*"fit":' $1) <(grep -v '^[[:space:]]*"fit":' $2)

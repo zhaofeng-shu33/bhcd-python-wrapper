@@ -1,3 +1,0 @@
-#!/bin/sh
-
-stdbuf -oL ./src/bhcd/benchbhcd  | tee output/bench_output
