@@ -11,12 +11,12 @@ import math
 import networkx as nx
 from ete3 import Tree
 
+import pybhcd
+
 BUILD_DIR = os.path.join(os.path.dirname(__file__), 'build')
 
-def parse_tree(filename):
-    st = ''
-    with open(filename) as f:
-        st = f.read()
+def parse_tree(content):
+    st = content
     st = st.replace('\n','').replace('\t','').replace('\\','/')
     st = st.replace(']}','')
     st += ']}'
@@ -52,16 +52,6 @@ def parse_predict_file(filename):
     
 class BHCD:
     def __init__(self, restart=1, gamma=0.4, alpha=1.0, beta=0.2, delta=1.0, _lambda=0.2, sparse=True):
-        self.bhcd = 'bhcd'
-        if(os.environ.get('BHCD')):
-            self.bhcd = os.environ['BHCD']
-        else:
-            if(sys.platform == 'win32'):
-                exe_path = os.path.join(os.path.dirname(__file__), 'bhcd', 'build', 'bhcd', 'Release', 'bhcd.exe')
-            else:
-                exe_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'bhcd', 'build', 'bhcd', 'bhcd')
-            if(os.path.exists(exe_path)):
-                self.bhcd = exe_path
         self.tree = Tree()
         self._gamma = gamma
         self._alpha = alpha
@@ -79,9 +69,7 @@ class BHCD:
         for edge in G.edges():
             i,j = edge
             _G.add_edge(i,j)
-        _, filename = tempfile.mkstemp()
-        self.gml = filename
-        nx.write_gml(_G, filename)
+        return '\n'.join(nx.generate_gml(_G))
 
     def _write_gml_test(self, node_num):
         _G = nx.Graph()
@@ -93,29 +81,15 @@ class BHCD:
         nx.write_gml(_G, filename)
 
     def fit(self, G, initialize_tree = True, predict=True):
-        self._write_gml(G)
-        if(predict):
-            self.node_size = len(G)
-            self._write_gml_test(self.node_size)            
+        gml_str = self._write_gml(G)
         # write files to build directory, replace the last run of fit
-        intermediate_file_prefix = 'runner_%d'%os.getpid()
-        command_list = [self.bhcd, '-g', str(self._gamma), '-a', str(self._alpha),
-            '-b', str(self._beta), '-d', str(self._delta), '-l', str(self._lambda),
-            '-p', intermediate_file_prefix, '-R', str(self.restart), '--data-symmetric']
-        if(predict):
-            self._write_gml_test(len(G))
-            command_list.extend(['-t', self.test_gml])    
-        if(self.sparse):
-            command_list.append('-S')
-        command_list.append(self.gml)
-        subprocess.run(command_list, cwd=BUILD_DIR)
-        # block until call returned
-        tree_filename = os.path.join(BUILD_DIR,  intermediate_file_prefix + '.tree')
+        parameter_dic = {'gamma': self._gamma, 'alpha': self._alpha,
+            'beta': self._beta, 'delta': self._delta, '_lambda': self._lambda,
+            'binary_only': False, 'restarts': self.restart, 'sparse': self.sparse
+        }
+        output_content = pybhcd.bhcd(gml_str, **parameter_dic)
         if(initialize_tree):
-            self.tree = parse_tree(tree_filename)
-        if(predict):
-            predict_file = os.path.join(BUILD_DIR, intermediate_file_prefix + '.pred')
-            self.predict_dic = parse_predict_file(predict_file)
+            self.tree = parse_tree(output_content)
     
     def predict(self, node_index_i, node_index_j, weight_added = 1):
         if not(type(node_index_i) is int and type(node_index_j) is int):

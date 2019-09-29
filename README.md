@@ -1,5 +1,5 @@
 # bhcd: Bayesian Hierarchical Community Discovery
-[![PyPI](https://img.shields.io/pypi/v/pybhcd.svg)](https://pypi.org/project/pybhcd)
+[![PyPI](https://img.shields.io/pypi/v/bhcd.svg)](https://pypi.org/project/bhcd)
 
 An efficient Bayesian nonparametric model for discovering hierarchical community structure in social networks. 
 
@@ -10,14 +10,9 @@ constraint.
 alpha > beta
 lambda > delta
 
-## Build
-
-Use CMake to build, necessary dependencies are glib and gsl. For Windows, you can use [vcpkg](https://github.com/microsoft/vcpkg) to install the dependencies.
-remove lua support.
-
 ## Usage
 
-Python wrapper. Set an environment variable called `BHCD`, pointing to the executable of bhcd. Then
-you can run `python bhcd.py` to get the hierachical tree.
+Python wrapper. 
+You can run `python bhcd.py` to get the hierachical tree.
 
 

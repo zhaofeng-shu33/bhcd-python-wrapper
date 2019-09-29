@@ -114,7 +114,7 @@ if __name__ == '__main__':
     set_up_git_version()
     data_file_list = set_up_data_files()
     EXT_MODULE_CLASS = set_up_cython_extension()
-    setup(name = 'pybhcd',
+    setup(name = 'bhcd',
           data_files = data_file_list,
           version = '0.1',
           description = 'Bayesian Hierarchical Community Discovery',

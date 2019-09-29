@@ -1,16 +1,5 @@
-os: osx
-osx_image: xcode10.3
-sudo: required
-addons:
-  homebrew:
-    taps: zhaofeng-shu33/liblemonformula
-    packages:
-      - gsl
-      - glib-static
-install:
-  - brew cask install miniconda
-  - conda create -y --name py36 python=3.6
-  - conda create -y --name py37 python=3.7
-  - conda init bash
-script:
-  - ./travis/build.sh
+os: linux
+dist: xenial
+language: python
+python: 3.6
+
