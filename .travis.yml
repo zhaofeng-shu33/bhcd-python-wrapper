@@ -3,3 +3,13 @@ dist: xenial
 language: python
 python: 3.6
 
+script:
+  - python setup.py install
+  - python test/test.py
+  
+deploy:
+  provider: pypi
+  user: zhaofeng-shu33
+  password: $TWINE_PASSWORD
+  on:
+    tags: true

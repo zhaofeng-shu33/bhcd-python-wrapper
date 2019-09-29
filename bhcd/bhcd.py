@@ -13,8 +13,6 @@ from ete3 import Tree
 
 import pybhcd
 
-BUILD_DIR = os.path.join(os.path.dirname(__file__), 'build')
-
 def parse_tree(content):
     st = content
     st = st.replace('\n','').replace('\t','').replace('\\','/')
@@ -60,6 +58,7 @@ class BHCD:
         self._lambda = _lambda
         self.sparse = sparse
         self.restart = restart
+        
     def _write_gml(self, G):
         '''write to tmp dir
         '''
@@ -90,21 +89,5 @@ class BHCD:
         output_content = pybhcd.bhcd(gml_str, **parameter_dic)
         if(initialize_tree):
             self.tree = parse_tree(output_content)
-    
-    def predict(self, node_index_i, node_index_j, weight_added = 1):
-        if not(type(node_index_i) is int and type(node_index_j) is int):
-            raise ValueError("two index should be int typed")
-        if not(node_index_i >= 0 and node_index_i < self.node_size and node_index_j >=0 and node_index_j < self.node_size):
-            raise IndexError("index out of range")
-        if(node_index_i < node_index_j):
-            return self.predict_dic[(node_index_i, node_index_j)] > 0.5 
-        else:
-            return self.predict_dic[(node_index_j, node_index_i)] > 0.5    
+
             
-if __name__ == '__main__':
-    G = nx.Graph()
-    G.add_edge(0,1)
-    G.add_edge(2,3)    
-    a = BHCD()
-    a.fit(G)
-    print(a.tree)
