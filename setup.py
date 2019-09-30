@@ -5,7 +5,7 @@ with open("README.md") as fh:
     
 if __name__ == '__main__':
     setup(name = 'bhcd',
-          version = '0.1',
+          version = '0.1.post2',
           description = 'Bayesian Hierarchical Community Discovery',
           author = 'zhaofeng-shu33',
           author_email = '616545598@qq.com',
