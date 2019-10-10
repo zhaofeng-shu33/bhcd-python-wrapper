@@ -13,15 +13,10 @@ from ete3 import Tree
 
 import pybhcd
 
-def parse_tree(content):
-    st = content
-    st = st.replace('\n','').replace('\t','').replace('\\','/')
-    st = st.replace(']}','')
-    st += ']}'
-    js = json.loads(st)
+def parse_tree(json_obj):
     tree = Tree()
     tree.add_features(custom_name='0')
-    for i in js["tree"]:
+    for i in json_obj["tree"]:
         # parse stem    
         if(i.get("stem")):
             if(i["stem"]["parent"] == 0):
@@ -80,14 +75,13 @@ class BHCD:
         nx.write_gml(_G, filename)
 
     def fit(self, G, initialize_tree = True, predict=True):
-        gml_str = self._write_gml(G)
         # write files to build directory, replace the last run of fit
         parameter_dic = {'gamma': self._gamma, 'alpha': self._alpha,
             'beta': self._beta, 'delta': self._delta, '_lambda': self._lambda,
             'binary_only': False, 'restarts': self.restart, 'sparse': self.sparse
         }
-        output_content = pybhcd.bhcd(gml_str, **parameter_dic)
+        output_json = pybhcd.bhcd(G, **parameter_dic)
         if(initialize_tree):
-            self.tree = parse_tree(output_content)
+            self.tree = parse_tree(output_json)
 
             
