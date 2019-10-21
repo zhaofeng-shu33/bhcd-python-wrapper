@@ -34,7 +34,7 @@ def parse_tree(json_obj):
 
 def parse_predict(json_obj):
     dic = {}
-    for r in json_obj['fit']['edges']:
+    for r in json_obj['fit']['edge']:
         index_i = int(r[0])
         index_j = int(r[1])
         prob_true = math.exp(float(r[-1]))
