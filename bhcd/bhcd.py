@@ -32,15 +32,13 @@ def parse_tree(json_obj):
             parent_node.add_child(name=str(i["leaf"]["label"]))
     return tree
 
-def parse_predict_file(filename):
+def parse_predict(json_obj):
     dic = {}
-    with open(filename) as f:
-        csv_r = csv.reader(f, delimiter=',')
-        for r in csv_r:
-            index_i = int(r[1])
-            index_j = int(r[2])
-            prob_true = math.exp(float(r[-1]))
-            dic[(index_i, index_j)] = prob_true
+    for r in json_obj['fit']['edges']:
+        index_i = int(r[0])
+        index_j = int(r[1])
+        prob_true = math.exp(float(r[-1]))
+        dic[(index_i, index_j)] = prob_true
     return dic
     
 class BHCD:
@@ -52,27 +50,7 @@ class BHCD:
         self._delta = delta
         self._lambda = _lambda
         self.sparse = sparse
-        self.restart = restart
-        
-    def _write_gml(self, G):
-        '''write to tmp dir
-        '''
-        _G = nx.Graph()
-        for node in G.nodes():
-            _G.add_node(node)
-        for edge in G.edges():
-            i,j = edge
-            _G.add_edge(i,j)
-        return '\n'.join(nx.generate_gml(_G))
-
-    def _write_gml_test(self, node_num):
-        _G = nx.Graph()
-        for i in range(node_num):
-            for j in range(i+1, node_num):
-                _G.add_edge(i, j)
-        _, filename = tempfile.mkstemp()
-        self.test_gml = filename
-        nx.write_gml(_G, filename)
+        self.restart = restart        
 
     def fit(self, G, initialize_tree = True, predict=True):
         # write files to build directory, replace the last run of fit
@@ -81,7 +59,17 @@ class BHCD:
             'binary_only': False, 'restarts': self.restart, 'sparse': self.sparse
         }
         output_json = pybhcd.bhcd(G, **parameter_dic)
-        if(initialize_tree):
+        if initialize_tree:
             self.tree = parse_tree(output_json)
+        if predict:
+            self.predict_dic = parse_predict(output_json)
 
-            
+    def predict(self, node_index_i, node_index_j, weight_added = 1):
+        if not(type(node_index_i) is int and type(node_index_j) is int):
+            raise ValueError("two index should be int typed")
+        if not(node_index_i >= 0 and node_index_i < self.node_size and node_index_j >=0 and node_index_j < self.node_size):
+            raise IndexError("index out of range")
+        if(node_index_i < node_index_j):
+            return self.predict_dic[(node_index_i, node_index_j)] > 0.5 
+        else:
+            return self.predict_dic[(node_index_j, node_index_i)] > 0.5                
