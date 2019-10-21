@@ -53,10 +53,12 @@ class BHCD:
         self.restart = restart        
 
     def fit(self, G, initialize_tree = True, predict=True):
+        self.node_size = len(G.nodes)
         # write files to build directory, replace the last run of fit
         parameter_dic = {'gamma': self._gamma, 'alpha': self._alpha,
             'beta': self._beta, 'delta': self._delta, '_lambda': self._lambda,
-            'binary_only': False, 'restarts': self.restart, 'sparse': self.sparse
+            'binary_only': False, 'restarts': self.restart, 'sparse': self.sparse,
+            'predict': predict
         }
         output_json = pybhcd.bhcd(G, **parameter_dic)
         if initialize_tree:

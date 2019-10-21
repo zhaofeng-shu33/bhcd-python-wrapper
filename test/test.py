@@ -15,6 +15,8 @@ class TestBHCD(unittest.TestCase):
         G.add_edge(2,3)    
         a = BHCD()
         a.fit(G)
+        self.assertTrue(a.predict(0, 1))
+        self.assertTrue(a.predict(2, 3))
         print(a.tree)
     
 if __name__ == '__main__':
