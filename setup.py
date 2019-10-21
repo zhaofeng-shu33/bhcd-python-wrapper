@@ -5,9 +5,10 @@ with open("README.md") as fh:
     
 if __name__ == '__main__':
     setup(name = 'bhcd',
-          version = '0.3',
+          version = '0.3.post1',
           description = 'Bayesian Hierarchical Community Discovery',
           author = 'zhaofeng-shu33',
+          install_requires = ['pybhcd'],
           author_email = '616545598@qq.com',
           url = 'https://github.com/zhaofeng-shu33/bhcd-python-wrapper',
           maintainer = 'zhaofeng-shu33',
